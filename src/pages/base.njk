@@ -1,0 +1,73 @@
+{% from "naturescot/components/header/macro.njk" import naturescotHeader %}
+{% from "naturescot/components/footer/macro.njk" import naturescotFooter %}
+{% from "govuk/components/phase-banner/macro.njk" import govukPhaseBanner %}
+
+<html lang="en" class="govuk-template">
+  {% block head %}
+
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+      <meta name="robots" content="noindex, nofollow">
+      <title>
+        {% block pageTitle %}Greener Software{% endblock %}
+      </title>
+      <link rel="stylesheet" href="/deer-return/assets/main.css">
+    </head>
+
+  {% endblock %}
+
+  <body class="govuk-template__body">
+
+    {{ naturescotHeader({
+       homepageUrl: "https://www.nature.scot/",
+       serviceName: "Deer Return",
+       serviceUrl: "/deer-return/"
+     }) }}
+
+    <nav class="govuk-width-container">
+
+      {% set feedbackText %}This is a new service - your feedback will help us to improve it. <a class="govuk-link" href="https://www.surveymonkey.com/r/deer-returns" target="_blank">Complete our survey (opens in new tab).</a>{% endset %}
+
+      {{ govukPhaseBanner({
+         tag: {
+           text: "beta"
+         },
+         html: feedbackText
+       }) }}
+
+      {% if backUrl %}
+        <a href="/deer-return{{backUrl}}?action=back" class="govuk-back-link">Back</a>
+      {% endif %}
+
+    </nav>
+
+    <main class="govuk-main-wrapper govuk-width-container">
+
+      <div class="govuk-grid-row">
+        {% block content %}{% endblock %}
+      </div>
+
+    </main>
+
+    {{ naturescotFooter({
+    meta: {
+      items: [
+        {
+          href: "/deer-authorisations/privacy",
+          text: "Privacy"
+        },
+        {
+          href: "https://www.nature.scot/cookie-policy",
+          text: "Cookies"
+        },
+        {
+          href: "/deer-authorisations/accessibility",
+          text: "Accessibility"
+        }
+      ]
+    }
+  }) }}
+    {% block bodyEnd %}{% endblock %}
+  </body>
+</html>

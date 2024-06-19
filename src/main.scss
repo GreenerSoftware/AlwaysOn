@@ -1,0 +1,45 @@
+$font-family: 'Roboto';
+$path-prefix: '/deer-return';
+$govuk-assets: $path-prefix + '/govuk-frontend/assets/';
+$naturescot-assets: $path-prefix + '/naturescot-frontend/assets/';
+
+@use 'govuk-frontend/govuk/all' as * with (
+  $govuk-font-family: $font-family,
+  $govuk-assets-path: $govuk-assets
+);
+
+@use 'naturescot-frontend/naturescot/all' as * with (
+  $govuk-font-family: $font-family,
+  $govuk-assets-path: $naturescot-assets
+);
+
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Roboto'), local('Roboto-Regular'), url($naturescot-assets + 'fonts/Roboto-Regular.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 700;
+  src: local('Roboto Bold'), local('Roboto-Bold'), url($naturescot-assets + 'fonts/Roboto-Bold.woff2') format('woff2');
+}
+
+.white-space-nowrap {
+  white-space: nowrap;
+}
+
+.table-cell-ellipsis {
+  width: calc(100% - 1px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.table-cell-property {
+  max-width: 200px;
+  overflow: hidden;
+}

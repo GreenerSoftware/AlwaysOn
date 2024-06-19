@@ -1,0 +1,136 @@
+{
+  "name": "deer-return",
+  "version": "0.1.0",
+  "contributors": [],
+  "repository": "github:Scottish-Natural-Heritage/deer-return",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "node:version": "node --version",
+    "lint:spelling": "cspell \"{src/**/*.ts,**/*.json}\"",
+    "lint:code": "xo",
+    "lint:code:fix": "xo --fix",
+    "lint": "npm run lint:spelling && npm run lint:code",
+    "clean:ts": "rm -r dist/ || true",
+    "clean:scss": "rm assets/main.css assets/main.css.map || true",
+    "clean": "npm run clean:ts && npm run clean:scss",
+    "build:ts": "tsc",
+    "build:scss": "sass --quiet-deps --load-path=node_modules src/main.scss assets/main.css",
+    "build": "npm run build:ts && npm run build:scss",
+    "start:dev": "npm run build && npm run start",
+    "start": "node dist/server.js",
+    "start:watch": "nodemon -L -e njk,ts,json --exec node --inspect=0.0.0.0 -r ts-node/register src/server.ts",
+    "start:mock:watch": "nodemon -L -e njk,ts,json --exec node --inspect=0.0.0.0 -r ts-node/register src/server-mock.ts true",
+    "start:mock": "node dist/server-mock.js false",
+    "start:mock:mock-model": "node dist/server-mock.js true",
+    "test:ava": "npm run build:ts && ava",
+    "test:unit": "UNDER_TEST=true c8 --all --check-coverage --lines 1 --src 'src' --exclude 'mock' --exclude 'pages/page-urls.ts' --exclude 'pages/view-model.ts' --exclude 'pages/**/*.page.ts' --exclude 'pages/01-welcome/01-welcome.model.ts' --exclude 'application-config.ts' --exclude 'application-model.ts' --exclude 'constants.ts' --exclude 'controller.ts' --exclude 'return-state.ts' --exclude 'types.ts' --reporter text --reporter html ava",
+    "test:serve": "npm run build && npm run start",
+    "test:e2e:open": "cypress open",
+    "test:e2e:run": "cypress run",
+    "test:e2e": "UNDER_TEST=true start-server-and-test start:mock:mock-model http://localhost:3305/deer-return/health test:e2e:run",
+    "test:a11y:open": "cypress open --config-file cypress.a11y.config.ts",
+    "test:a11y:run": "cypress run --config-file cypress.a11y.config.ts",
+    "test:a11y": "UNDER_TEST=true start-server-and-test start:mock:mock-model http://localhost:3305/deer-return/health test:a11y:run",
+    "test": "npm run test:unit && npm run test:e2e && npm run test:a11y",
+    "pretest": "npm run build"
+  },
+  "license": "(MIT OR OGL-UK-3.0)",
+  "devDependencies": {
+    "@ava/typescript": "^4.1.0",
+    "@naturescot/licensing-upload-utils": "^0.1.9",
+    "@types/hapi": "^18.0.14",
+    "@types/hapi__yar": "^10.1.6",
+    "@types/jsonwebtoken": "^9.0.5",
+    "@types/node": "^20.11.18",
+    "@types/nunjucks": "^3.2.6",
+    "@typescript-eslint/eslint-plugin": "7.0.1",
+    "ava": "^6.1.1",
+    "axios-mock-adapter": "^1.22.0",
+    "c8": "^9.1.0",
+    "cspell": "^8.3.2",
+    "cypress": "^13.6.4",
+    "cypress-axe": "^1.5.0",
+    "eslint-plugin-cypress": "^2.15.1",
+    "eslint-plugin-editorconfig": "^4.0.3",
+    "eslint-plugin-jsdoc": "^48.1.0",
+    "nodemon": "^3.0.3",
+    "prettier": "^3.2.5",
+    "sass": "^1.70.0",
+    "start-server-and-test": "^2.0.3",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3",
+    "xo": "^0.57.0"
+  },
+  "dependencies": {
+    "@hapi/hapi": "^21.3.3",
+    "@hapi/inert": "7.1.0",
+    "@hapi/vision": "7.0.3",
+    "@hapi/yar": "11.0.1",
+    "@types/sinon": "^17.0.3",
+    "axios": "^1.6.7",
+    "govuk-frontend": "^4.8.0",
+    "jsonwebtoken": "^8.5.1",
+    "naturescot-frontend": "^4.5.0",
+    "naturescot-utils": "^1.4.1",
+    "nunjucks": "^3.2.4",
+    "sinon": "^17.0.1"
+  },
+  "xo": {
+    "space": 2,
+    "prettier": true,
+    "plugins": [
+      "cypress",
+      "jsdoc",
+      "editorconfig"
+    ],
+    "envs": [
+      "cypress/globals"
+    ],
+    "extends": [
+      "plugin:jsdoc/recommended",
+      "plugin:editorconfig/all"
+    ],
+    "rules": {
+      "ava/no-skip-test": 0,
+      "n/file-extension-in-import": 0,
+      "import/extensions": 0,
+      "jsdoc/check-examples": 0,
+      "jsdoc/check-indentation": 1,
+      "jsdoc/check-syntax": 1,
+      "jsdoc/match-description": 1,
+      "jsdoc/require-description": 1,
+      "jsdoc/require-description-complete-sentence": 1,
+      "arrow-body-style": [
+        "error",
+        "always"
+      ],
+      "unicorn/prevent-abbreviations": [
+        "error",
+        {
+          "replacements": {
+            "application": {
+              "app": false
+            }
+          }
+        }
+      ]
+    }
+  },
+  "prettier": {
+    "printWidth": 120,
+    "singleQuote": true,
+    "arrowParens": "always",
+    "bracketSpacing": false,
+    "trailingComma": "all"
+  },
+  "ava": {
+    "typescript": {
+      "rewritePaths": {
+        "src/": "dist/"
+      },
+      "compile": false
+    }
+  }
+}

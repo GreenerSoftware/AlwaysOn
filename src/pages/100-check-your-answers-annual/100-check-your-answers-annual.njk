@@ -1,0 +1,136 @@
+{% extends "base.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+
+{% block pageTitle %}Greener Software - Check your answers{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-column-two-thirds-from-desktop">
+    <h1 class="govuk-heading-l">Check your answers before sending your return</h1>
+
+    {% if error %}
+      {{ govukErrorSummary({
+      titleText: "There is a problem",
+      errorList: [
+        {
+          text: "You must select the Yes, I confirm check box to continue",
+          href: "#confirm"
+        } if error.confirmIncorrectValue,
+        {
+          text: "There was a problem submitting your return. Please try again",
+          href: "#confirm"
+        } if error.apiError
+      ]
+    })}}
+    {% endif %}
+
+    <form method="post">
+      <h2 class="govuk-heading-m">Personal details</h2>
+      {{ govukSummaryList({
+        rows: [
+          {
+            key: {
+              text: "Name"
+            },
+            value: {
+              text: applicantName
+            },
+            actions: {
+              items: [
+                {
+                  href: changePersonalDetailsLink,
+                  text: "Change"
+                }
+              ]
+            }
+          },
+          {
+            key: {
+              text: "Email"
+            },
+            value: {
+              text: applicantEmailAddress
+            },
+            actions: {
+              items: [
+                {
+                  href: changePersonalDetailsLink,
+                  text: "Change"
+                }
+              ]
+            }
+          },
+          {
+            key: {
+              text: "Organisation"
+            },
+            value: {
+              text: applicantOrganisation
+            },
+            actions: {
+              items: [
+                {
+                  href: changePersonalDetailsLink,
+                  text: "Change"
+                }
+              ]
+            }
+          },
+          {
+            key: {
+              text: "Phone number"
+            },
+            value: {
+              text: applicantPhoneNumber
+            },
+            actions: {
+              items: [
+                {
+                  href: changePersonalDetailsLink,
+                  text: "Change"
+                }
+              ]
+            }
+          }
+        ]
+      }) }}
+
+      <h1 class="govuk-heading-m">Declaration</h1>
+
+      <p class="govuk-body">
+        <b>
+          I confirm that:
+        </b>
+      </p>
+
+      <ul class="govuk-list govuk-list--bullet">
+        <li>The information I have provided is up to date and correct</li>
+
+        <li>I agree with the <a href="/deer-authorisations/privacy">privacy policy</a> of this service</li>
+      </ul>
+
+      {{ govukCheckboxes({
+          id: "confirm",
+          name: "confirm",
+          items: [
+                {
+                  value: "yes",
+                  text: "Yes, I confirm"
+                }
+              ]
+          }) 
+      }}
+
+      {{ govukButton({
+      text: "Accept and send",
+      preventDoubleClick: true
+    }) }}
+
+    </form>
+
+  </div>
+
+{% endblock %}

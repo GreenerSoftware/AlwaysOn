@@ -1,0 +1,59 @@
+{% extends "base.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% block pageTitle %}Deer Return - Submit a return{% endblock %}
+
+{% block content %}
+	<div class="govuk-grid-column-two-thirds">
+		<h1 class="govuk-heading-l" id="submit">Submit a return</h1>
+
+		<p class="govuk-body">
+      We collect information about the number of deer culled in Scotland. This helps us understand changing deer populations and the impact of deer management activities.
+  </p>
+
+		<p class="govuk-body">
+      If you are a landowner/occupier, or have a deer authorisation, you must submit a return of the number of deer that were shot on your land.
+  </p>
+
+		<p class="govuk-body">
+      You must report on cull numbers:
+  </p>
+
+		<ul class="govuk-list govuk-list--bullet">
+			<li>under authorisation within seven days of the expiry date</li>
+			<li>per property on an annual basis (in April)</li>
+		</ul>
+
+		<h2 class="govuk-heading-m">Before you begin</h2>
+		<p class="govuk-body">We'll ask you to provide the number of deer culled by sex and species, per property.</p>
+		<p class="govuk-body">If you missed the deadline, you can still submit an overdue return.</p>
+
+		<form method="post">
+
+			{{ govukButton({
+      text: "Start now",
+      isStartButton: true
+    }) }}
+
+		</form>
+
+		<h2 class="govuk-heading-m">Submit returns offline</h2>
+
+		<p class="govuk-body">It is quicker and easier to submit returns online. </p>
+		<p class="govuk-body">If you prefer to send the data by email or post, contact our Licensing team to request a paper form.</p>
+
+		<h2 class="govuk-heading-s">Email</h2>
+		<p class="govuk-body">
+			<a class="govuk-link" href="mailto:licensing@nature.scot">licensing@nature.scot</a>
+		</p class="govuk-body">
+
+		<h2 class="govuk-heading-s">Telephone</h2>
+		<p class="govuk-body">01463 725 364 </p>
+		<p class="govuk-body">Monday to Friday, 10am to 4pm (except public holidays) </p>
+		<p class="govuk-body">
+			<a class="govuk-link" href="https://www.gov.uk/call-charges" target="_blank">Find out about call charges (opens in a new tab)</a>.</p>
+		<p class="govuk-body">
+			<a class="govuk-link" href="#submit">Back to top</a>.</p>
+	</div>
+{% endblock %}

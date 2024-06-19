@@ -1,0 +1,33 @@
+{
+  "version": "0.2",
+  "language": "en-GB",
+  "words": [
+    "editorconfig",
+    "govuk",
+    "naturescot",
+    "prestart",
+    "sass",
+    "Parens",
+    "RPSD",
+    "UPRN",
+    "uprn",
+    "matchscore",
+    "Applybot",
+    "jobid",
+    "Reindeerland",
+    "missingspecies",
+    "invalidspecies",
+    "LEACHKIN",
+    "Aberchalder",
+    "Glenbuck",
+    "Sika",
+    "MUNERIGIE",
+    "KILFINNAN"
+  ],
+  "ignorePaths": [
+    "node_modules/**/*",
+    "dist/**/*",
+    "package-lock.json",
+    "coverage/**/*"
+  ]
+}

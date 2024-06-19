@@ -1,0 +1,141 @@
+{% extends "base.njk" %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+
+{% block pageTitle %}Greener Software - Personal Details{% endblock %}
+
+{% block content %}
+
+  {% set nameErrorMessage %}
+  {% if error.missingNameValue %}
+      Enter your full name
+    {% elif error.invalidNameValue %}
+      Enter your full name (first and last name)
+    {% else %}
+    {# Blank. Not an error. #}
+  {% endif %}
+  {% endset %}
+
+  {% set emailAddressErrorMessage %}
+  {% if error.missingEmailAddressValue %}
+      Enter an email address
+    {% elif error.invalidEmailAddressValue %}
+      Enter an email address in the correct format, like name@example.com
+    {% else %}
+    {# Blank. Not an error. #}
+  {% endif %}
+  {% endset %}
+
+  {% if error %}
+    {{ govukErrorSummary({
+      "titleText": "There is a problem",
+      "errorList": [
+        {
+          "text": "Enter your full name",
+          "href": "#name"
+        } if error.missingNameValue,
+        {
+          "text": "Enter your full name (first and last name)",
+          "href": "#name"
+        } if error.invalidNameValue,
+        {
+          "text": "Enter an email address",
+          "href": "#emailAddress"
+        } if error.missingEmailAddressValue,
+        {
+          "text": "Enter an email address in the correct format, like name@example.com",
+          "href": "#emailAddress"
+        } if error.invalidEmailAddressValue,
+        {
+          "text": "Enter a valid telephone number",
+          "href": "#phoneNumber"
+        } if error.invalidPhoneNumberValue,
+        {
+          "text": "Select owner or occupier",
+          "href": "#role"
+        } if error.missingRoleSelectedValue
+      ]
+    }) }}
+  {% endif %}
+
+  <h1 class="govuk-heading-l">What are your details?</h1>
+
+  <div class="govuk-body">
+    <p>
+      By providing your details, you agree for NatureScot to contact you regarding this application.
+    </p>
+
+    <form method="post">
+
+      {{ govukInput({
+        label: {
+          html: 'Full name'
+        },
+        id: "name",
+        name: "name",
+        value: name,
+        spellcheck: false,
+        autocomplete: "name",
+        classes: "govuk-input--width-20",
+        hint: {
+          text: "As it appears on official documents"
+        },
+        errorMessage: {
+          text: nameErrorMessage
+        } if error.missingNameValue or error.invalidNameValue
+      }) }}
+
+      {{ govukInput({
+        label: {
+          html: 'Organisation name (optional)'
+        },
+        id: "organisation",
+        name: "organisation",
+        value: organisation,
+        spellcheck: false,
+        autocomplete: "organisation",
+        classes: "govuk-input--width-20"
+      }) }}
+
+      {{ govukInput({
+        label: {
+          html: 'Email address'
+        },
+        id: "emailAddress",
+        name: "emailAddress",
+        value: emailAddress,
+        spellcheck: false,
+        autocomplete: "email",
+        classes: "govuk-input--width-20",
+        errorMessage: {
+          text: emailAddressErrorMessage
+        } if error.missingEmailAddressValue or error.invalidEmailAddressValue
+      }) }}
+
+      {{ govukInput({
+        label: {
+          html: 'Telephone number (optional)'
+        },
+        id: "phoneNumber",
+        name: "phoneNumber",
+        value: phoneNumber,
+        spellcheck: false,
+        autocomplete: "tel",
+        classes: "govuk-!-width-one-third",
+        type: "tel",
+        errorMessage: {
+          text: 'Enter a valid telephone number'
+        } if error.invalidPhoneNumberValue
+      }) }}
+
+      {{ govukButton({
+        text: "Continue",
+        preventDoubleClick: true
+      }) }}
+
+    </form>
+  </div>
+
+{% endblock %}
