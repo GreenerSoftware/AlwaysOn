@@ -2,13 +2,11 @@
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import {
-  Cognito, BuildsBucket, QueueFunction, WebRoutes, ZipFunction, githubActions,
+  BuildsBucket, WebRoutes, ZipFunction, githubActions,
 } from '@scloud/cdk-patterns';
-import { AttributeType, BillingMode, Table } from 'aws-cdk-lib/aws-dynamodb';
 import { Function } from 'aws-cdk-lib/aws-lambda';
 import { HostedZone, IHostedZone } from 'aws-cdk-lib/aws-route53';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
-import { Queue } from 'aws-cdk-lib/aws-sqs';
 import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
 // import { BucketDeployment, Source } from 'aws-cdk-lib/aws-s3-deployment';
 // import * as path from 'path';
@@ -38,44 +36,6 @@ export default class AlwaysonStack extends cdk.Stack {
     // Having a bucket to store the code in means we can update the Lambda function to use the code, either here in the infrastructure build, or from the Github Actions build.
     const builds = new BuildsBucket(this)
 
-    // Bucket to back up infrastructure build inputs/outputs
-    // This is useful for backup and for sharing build inputs between developers, but is commentsed out by default
-    // So you son't upload anything to s3 without explicity deciding this is something that's useful for you.
-    // The imports this needs are also commented out by default and you'll need PrivateBucket added to the @scloud/cdk-patterns import.
-    // new BucketDeployment(this, 'secretsDeployment', {
-    //   destinationBucket: PrivateBucket.expendable(this, 'secrets'),
-    //   sources: [Source.asset(path.join(__dirname, '../secrets'))],
-    // });
-
-    // An optional queue for sending notifications to Slack
-    const slackQueue = this.slack();
-
-    // Cognito authentication
-    const cognito = this.cognito();
-
-    // Example bucket
-    const aBucket = new Bucket(this, 'bucket', {
-      removalPolicy: cdk.RemovalPolicy.DESTROY, // TEMP so you can clean up the stack without resources being left behind
-    });
-
-    // Example DynamoDB table
-    const aTable = new Table(this, 'table', {
-      billingMode: BillingMode.PAY_PER_REQUEST,
-      partitionKey: {
-        name: 'id',
-        type: AttributeType.STRING,
-      },
-      removalPolicy: cdk.RemovalPolicy.DESTROY, // TEMP so you can clean up the stack without resources being left behind
-    });
-
-    // Example Github Actions variables
-    // NB the scloud constructs will create most of the variables you need automatically
-    githubActions(this).addGhaVariable('variableMcVariableFace', 'custom', 'a build variavle value'); // 'variableMcVariableFace' will be translated to 'VARIABLE_MC_VARIABLE_FACE_CUSTOM' in Github Actions
-
-    // Example Github Actions secret
-    // NB the scloud constructs will create most of the secrets you need automatically
-    githubActions(this).addGhaSecret('secretMcSecretFace', 'test'); // 'secretMcSecretFace' will be translated to 'SECRET_MC_SECRET_FACE' in Github Actions
-
     // Cloudfront function association:
     const defaultBehavior: Partial<cloudfront.BehaviorOptions> = {
       functionAssociations: [{
@@ -92,7 +52,7 @@ export default class AlwaysonStack extends cdk.Stack {
     // * API_LAMBDA - the name of the Lambda function to update when deploying the API
     // * CLOUDFRONT_BUCKET - for uploading the frontend
     // * CLOUDFRONT_DISTRIBUTIONID - for invalidating the Cloudfront cache
-    const api = this.api(cognito, builds, aBucket, aTable, slackQueue);
+    const api = this.api(builds);
     WebRoutes.routes(this, 'cloudfront', { '/api/*': api }, {
       zone,
       domainName: envVar('DOMAIN_NAME'),
@@ -128,56 +88,19 @@ export default class AlwaysonStack extends cdk.Stack {
     });
   }
 
-  slack(): Queue {
-    const slack = QueueFunction.node(this, 'slack', {
-      environment: {
-        SLACK_WEBHOOK: envVar('SLACK_WEBHOOK'),
-      },
-    });
-    return slack.queue;
-  }
-
-  cognito(): Cognito {
-    // Cognito for authentication
-    const stack = cdk.Stack.of(this);
-    const authDomainPrefix = `${stack.stackName}-${envVar('COGNITO_DOMAIN_PREFIX')}`.toLowerCase(); // COGNITO_DOMAIN_PREFIX needs to be unique, but also constant, otherwise we get an error on deployment. This is auto-generated and can be replaced with a value of your choice.
-    const callbackUrl = `https://${envVar('DOMAIN_NAME')}/auth`;
-
-    // Default to using a "domain prefix"
-    return Cognito.withEmailLogin(this, 'cognito', callbackUrl, undefined, undefined, undefined, authDomainPrefix);
-
-    // To create Cognito with Social logins, you can use:
-    // Cognito.withSocialLogins(this, 'cognito', callbackUrl, ... );
-
-    // To create a custom domain (e.g. auth.DOMAIN_NAME) you can use the following.
-    // NB at the time of writing there are a maximum of 4 custom domains per account.
-    // return Cognito.withEmailLogin(this, 'cognito', callbackUrl, undefined, zone);
-  }
-
   api(
-    cognito: Cognito,
     builds: Bucket,
-    aBucket: Bucket,
-    aTable: Table,
-    slackQueue: Queue,
   ): Function {
     // Lambda for the Node API
     const api = ZipFunction.node(this, 'api', {
       environment: {
-        SIGNIN_URL: cognito.signInUrl(),
-        SLACK_QUEUE_URL: slackQueue.queueUrl,
-        BUCKET: aBucket.bucketName,
-        TABLE: aTable.tableName,
       },
       functionProps: {
         memorySize: 3008,
         // code: Code.fromBucket(builds, 'api.zip'), // This can be uncommented once you've run a build of the API code
       },
     });
-
-    aBucket.grantReadWrite(api);
-    aTable.grantReadWriteData(api);
-    slackQueue.grantSendMessages(api);
+    console.log('API Lambda:', builds.bucketName); // TEMP: pass lint
 
     return api;
   }
