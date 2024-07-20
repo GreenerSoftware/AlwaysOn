@@ -22,9 +22,15 @@ import { Duration, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
 const DOMAIN_NAME = 'alwayson.greenersoftware.net';
 const ZONE_ID = 'Z02969861Z406S70ML8A3';
 
-// Github
-const OWNER = 'greenersoftware';
-const REPO = 'alwayson'
+// Github - set in secrets/github.sh
+// const OWNER = 'greenersoftware';
+// const REPO = 'alwayson';
+
+function env(key: string): string {
+  const value = process.env[key];
+  if (!value) throw new Error(`No environment variable value for ${key}`);
+  return value;
+}
 
 export default class AlwaysonStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -111,7 +117,7 @@ export default class AlwaysonStack extends Stack {
     // });
 
     // Set up OIDC access from Github Actions - this enables builds to deploy updates to the infrastructure
-    githubActions(this).ghaOidcRole({ owner: OWNER, repo: REPO });
+    githubActions(this).ghaOidcRole({ owner: env('OWNER'), repo: env('REPO') });
   }
 
   /**
