@@ -57,8 +57,6 @@ export default class AlwaysonStack extends Stack {
     };
     console.log(`defaultBehavior: ${defaultBehavior}`);
 
-    githubActions(this).addGhaBucket('bucket', new PrivateBucket(this, 'bucket'));
-
     const ec2Webapp = new EC2WebApp(this, 'alwaysOn', {
       zone,
       domainName: DOMAIN_NAME,
