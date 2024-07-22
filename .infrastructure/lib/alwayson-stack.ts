@@ -20,7 +20,7 @@ import { EC2WebApp } from './EC2WebApp.js';
 const DOMAIN_NAME = 'alwayson.greenersoftware.net';
 const ZONE_ID = 'Z02969861Z406S70ML8A3';
 
-// Github - set in secrets/github.sh
+// Github - set in .infrastructure/secrets/github.sh along with PERSONAL_ACCESS_TOKEN
 // const OWNER = 'greenersoftware';
 // const REPO = 'alwayson';
 
@@ -36,13 +36,11 @@ export default class AlwaysonStack extends Stack {
 
     // The code that defines your stack goes here
 
-    // This only needs to be created once per account. If you already have one, you can delete this.
+    // This only needs to be created once per account.
     githubActions(this).ghaOidcProvider();
 
-    // You'll need a zone to create DNS records in. This will need to be referenced by a real domain name so that SSL certificate creation can be authorised.
-    // NB the DOMAIN_NAME environment variable is defined in .infrastructure/secrets/domain.sh
+    // DNS zone
     const zone = this.zone(DOMAIN_NAME, ZONE_ID);
-    console.log(`zone: ${zone.zoneName}`);
 
     // Cloudfront function association:
     const defaultBehavior: Partial<cloudfront.BehaviorOptions> = {
@@ -56,6 +54,7 @@ export default class AlwaysonStack extends Stack {
     };
     console.log(`defaultBehavior: ${defaultBehavior}`);
 
+    // Cloudfront -> ALB -> ASG -> EC2
     const ec2Webapp = new EC2WebApp(this, 'alwaysOn', {
       zone,
       domainName: DOMAIN_NAME,
@@ -66,8 +65,8 @@ export default class AlwaysonStack extends Stack {
       },
     });
 
+    // RDS
     this.rds(ec2Webapp);
-    // console.log(`ec2Webapp: ${ec2Webapp}`);
 
     // Set up OIDC access from Github Actions - this enables builds to deploy updates to the infrastructure
     githubActions(this).ghaOidcRole({ owner: env('OWNER'), repo: env('REPO') });
