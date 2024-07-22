@@ -2,7 +2,6 @@
 import { Construct } from 'constructs';
 import {
   githubActions,
-  PrivateBucket,
 } from '@scloud/cdk-patterns';
 import { HostedZone, IHostedZone } from 'aws-cdk-lib/aws-route53';
 import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
