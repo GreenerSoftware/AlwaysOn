@@ -20,7 +20,7 @@ const DOMAIN_NAME = 'alwayson.greenersoftware.net';
 const ZONE_ID = 'Z02969861Z406S70ML8A3';
 
 // Github - set in .infrastructure/secrets/github.sh along with PERSONAL_ACCESS_TOKEN
-// const OWNER = 'greenersoftware';
+// const OWNER = 'GreenerSoftware';
 // const REPO = 'alwayson';
 
 function env(key: string): string {
