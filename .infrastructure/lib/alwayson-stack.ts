@@ -10,7 +10,6 @@ import { Credentials, DatabaseInstance, DatabaseInstanceEngine, MysqlEngineVersi
 import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
 import { Duration, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
 import { EC2WebApp } from './EC2WebApp.js';
-// import { EC2WebApp } from './EC2WebApp.js';
 
 // Credentials
 // PERSONAL_ACCESS_TOKEN - create a Github personal access token (classic) with 'repo' scope and set this in .infrastructure/secrets/github.sh using export PERSONAL_ACCESS_TOKEN=ghp_...
