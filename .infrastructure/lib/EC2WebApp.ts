@@ -103,7 +103,7 @@ export class EC2WebApp extends Construct {
 
     this.asg = new AutoScalingGroup(this, `${id}ASG`, {
       vpc: this.vpc,
-      instanceType: InstanceType.of(InstanceClass.T2, InstanceSize.MICRO),
+      instanceType: InstanceType.of(InstanceClass.T2, InstanceSize.SMALL),
       machineImage: MachineImage.latestAmazonLinux2({
         // cpuType: AmazonLinuxCpuType.ARM_64
       }),

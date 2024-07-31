@@ -51,7 +51,6 @@ export default class AlwaysonStack extends Stack {
         eventType: cloudfront.FunctionEventType.VIEWER_REQUEST,
       }],
     };
-    console.log(`defaultBehavior: ${defaultBehavior}`);
 
     // Cloudfront -> ALB -> ASG -> EC2
     const ec2Webapp = new EC2WebApp(this, 'alwaysOn', {
@@ -96,8 +95,6 @@ export default class AlwaysonStack extends Stack {
   rds(ec2Webapp: EC2WebApp): { databaseName: string, mysqlUsername: string, endPoint: string; } {
     const vpc = ec2Webapp.vpc;
 
-    ec2Webapp.asg;
-
     // Database connection details
     const mysqlUsername = "admin";
     const databaseName = "db";
@@ -139,7 +136,7 @@ export default class AlwaysonStack extends Stack {
       securityGroups: [dbsg],
       allowMajorVersionUpgrade: true,
       autoMinorVersionUpgrade: true,
-      instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.MICRO),
+      instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.SMALL),
       // vpcSubnets: {
       //   subnets: vpc.privateSubnets,
       // },
