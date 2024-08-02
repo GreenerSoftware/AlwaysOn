@@ -81,7 +81,7 @@ export class EC2WebApp extends Construct {
 
     // VPC for EC2 instance
     this.vpc = props.vpc || new Vpc(scope, `${id}Vpc`, {
-      natGateways: props.natGateways || 0,
+      natGateways: props.natGateways,
       subnetConfiguration: [
         {
           cidrMask: 24,
