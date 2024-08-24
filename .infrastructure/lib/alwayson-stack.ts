@@ -124,7 +124,7 @@ export default class AlwaysonStack extends Stack {
     dbsg.addIngressRule(ec2Webapp.asg.connections.securityGroups[0], Port.tcpRange(3306, 3306), 'inbound from ec2 asg');
 
     // Create database instance
-    const mysqlInstance = new DatabaseInstance(this, 'MysqlDatabase', {
+    const databaseInstance = new DatabaseInstance(this, 'MysqlDatabase', {
       databaseName,
       instanceIdentifier: 'database',
       credentials: mysqlCredentials,
@@ -159,11 +159,11 @@ export default class AlwaysonStack extends Stack {
       // }),
       publiclyAccessible: false,
     });
-    mysqlInstance.addRotationSingleUser();
+    databaseInstance.addRotationSingleUser();
 
     // new CfnOutput(this, 'MysqlEndpoint', {
     //   exportName: 'MysqlEndPoint',
-    //   value: mysqlInstance.dbInstanceEndpointAddress,
+    //   value: databaseInstance.dbInstanceEndpointAddress,
     // });
 
     // new CfnOutput(this, 'MysqlUserName', {
@@ -176,7 +176,12 @@ export default class AlwaysonStack extends Stack {
     //   value: props.dbName!,
     // });
 
-    return { databaseName, mysqlUsername, endPoint: mysqlInstance.dbInstanceEndpointAddress };
+    githubActions(this).addGhaVariable('secretName', 'rds', mysqlSecret.secretName);
+    githubActions(this).addGhaVariable('secretArn', 'rds', mysqlSecret.secretArn);
+    githubActions(this).addGhaVariable('hostname', 'rds', databaseInstance.instanceEndpoint.hostname);
+    githubActions(this).addGhaVariable('port', 'rds', `${databaseInstance.instanceEndpoint.port}`);
+
+    return { databaseName, mysqlUsername, endPoint: databaseInstance.dbInstanceEndpointAddress };
   }
 
 }
