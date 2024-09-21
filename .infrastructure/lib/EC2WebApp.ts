@@ -16,6 +16,7 @@ import { ApplicationLoadBalancer, ApplicationProtocol } from 'aws-cdk-lib/aws-el
 import { AutoScalingGroup } from 'aws-cdk-lib/aws-autoscaling';
 import { InstanceClass, InstanceSize, InstanceType, MachineImage, SubnetType, Vpc } from 'aws-cdk-lib/aws-ec2';
 
+const sandboxAccountId = '058264171014'; // Account ID for the Sandbox account
 const amiName = 'GreenerSoftwareFrontend'; // Machine Image for the app, shared from the Sandbox account
 
 /**
@@ -109,7 +110,7 @@ export class EC2WebApp extends Construct {
       instanceType: InstanceType.of(InstanceClass.T2, InstanceSize.SMALL),
       machineImage: MachineImage.lookup({
         name: amiName,
-        owners: ['058264171014'],
+        owners: [sandboxAccountId],
       }),
     });
 
@@ -131,7 +132,11 @@ export class EC2WebApp extends Construct {
     listener.addTargets(`${id}ALBTarget`, {
       port: 3000,
       protocol: ApplicationProtocol.HTTP,
-      targets: [this.asg]
+      targets: [this.asg],
+      healthCheck: {
+        healthyHttpCodes: "200,301,302",
+        path: '/deer-return/',
+      }
     });
 
     this.asg.scaleOnRequestCount(`${id}ModestLoad`, {
