@@ -13,7 +13,7 @@ import { Construct } from 'constructs';
 import { ARecord, IHostedZone, RecordTarget } from 'aws-cdk-lib/aws-route53';
 import { githubActions, PrivateBucket, RedirectWww } from '@scloud/cdk-patterns';
 import { ApplicationLoadBalancer, ApplicationProtocol } from 'aws-cdk-lib/aws-elasticloadbalancingv2';
-import { AutoScalingGroup } from 'aws-cdk-lib/aws-autoscaling';
+import { AutoScalingGroup, HealthCheck } from 'aws-cdk-lib/aws-autoscaling';
 import { InstanceClass, InstanceSize, InstanceType, MachineImage, SubnetType, Vpc } from 'aws-cdk-lib/aws-ec2';
 
 const sandboxAccountId = '058264171014'; // Account ID for the Sandbox account
@@ -112,6 +112,8 @@ export class EC2WebApp extends Construct {
         name: amiName,
         owners: [sandboxAccountId],
       }),
+      allowAllOutbound: true,
+      healthCheck: HealthCheck.ec2(),
     });
 
     // ALB for ASG
