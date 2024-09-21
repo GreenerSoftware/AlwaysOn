@@ -32,24 +32,11 @@ export default class AlwaysonStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    // The code that defines your stack goes here
-
     // This only needs to be created once per account.
     githubActions(this).ghaOidcProvider();
 
     // DNS zone
     const zone = this.zone(DOMAIN_NAME, ZONE_ID);
-
-    // Cloudfront function association:
-    // const defaultBehavior: Partial<cloudfront.BehaviorOptions> = {
-    //   functionAssociations: [{
-    //     function: new cloudfront.Function(this, 'staticURLs', {
-    //       code: cloudfront.FunctionCode.fromFile({ filePath: './lib/cfFunction.js' }),
-    //       comment: 'Rewrite static URLs to .html so they get forwarded to s3',
-    //     }),
-    //     eventType: cloudfront.FunctionEventType.VIEWER_REQUEST,
-    //   }],
-    // };
 
     // Cloudfront -> ALB -> ASG -> EC2
     const ec2Webapp = new EC2WebApp(this, 'alwaysOn', {
@@ -57,9 +44,6 @@ export default class AlwaysonStack extends Stack {
       domainName: DOMAIN_NAME,
       defaultIndex: false,
       redirectWww: false,
-      // distributionProps: {
-      //   defaultBehavior: defaultBehavior as cloudfront.BehaviorOptions,
-      // },
     });
 
     // RDS
