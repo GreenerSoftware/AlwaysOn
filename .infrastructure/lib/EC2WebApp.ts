@@ -113,7 +113,7 @@ export class EC2WebApp extends Construct {
         owners: [sandboxAccountId],
       }),
       allowAllOutbound: true,
-      healthCheck: HealthCheck.ec2(),
+      // healthCheck: HealthCheck.ec2(),
     });
 
     // ALB for ASG
