@@ -123,6 +123,7 @@ export class EC2WebApp extends Construct {
     // Add a listener and open up the load balancer's security group
     // to the world.
     const listener = this.alb.addListener(`${id}ALBListener`, {
+      protocol: ApplicationProtocol.HTTP,
       port: 80,
     });
     listener.connections.allowDefaultPortFromAnyIpv4('Open to the world');
