@@ -19,6 +19,10 @@ import { InstanceClass, InstanceSize, InstanceType, MachineImage, SubnetType, Vp
 const sandboxAccountId = '058264171014'; // Account ID for the Sandbox account
 const amiName = 'GreenerSoftwareFrontend'; // Machine Image for the app, shared from the Sandbox account
 
+// user data
+// #!/bin/bash
+// cd /home/ec2-user/AlwaysOn/app && npm run start:mock
+
 /**
  * @param zone The DNS zone for this web app.
  * @param domainName Optional: by default the zone name will be used (e.g. 'example.com') a different domain here (e.g. 'subdomain.example.com').
