@@ -15,6 +15,9 @@ import { githubActions, PrivateBucket, RedirectWww } from '@scloud/cdk-patterns'
 import { ApplicationLoadBalancer, ApplicationProtocol } from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 import { AutoScalingGroup } from 'aws-cdk-lib/aws-autoscaling';
 import { InstanceClass, InstanceSize, InstanceType, MachineImage, SubnetType, Vpc } from 'aws-cdk-lib/aws-ec2';
+
+const amiName = 'GreenerSoftwareFrontend'; // Machine Image for the app, shared from the Sandbox account
+
 /**
  * @param zone The DNS zone for this web app.
  * @param domainName Optional: by default the zone name will be used (e.g. 'example.com') a different domain here (e.g. 'subdomain.example.com').
@@ -104,8 +107,9 @@ export class EC2WebApp extends Construct {
     this.asg = new AutoScalingGroup(this, `${id}ASG`, {
       vpc: this.vpc,
       instanceType: InstanceType.of(InstanceClass.T2, InstanceSize.SMALL),
-      machineImage: MachineImage.latestAmazonLinux2({
-        // cpuType: AmazonLinuxCpuType.ARM_64
+      machineImage: MachineImage.lookup({
+        name: amiName,
+        owners: ['058264171014'],
       }),
     });
 
