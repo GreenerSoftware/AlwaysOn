@@ -137,21 +137,21 @@ export class EC2WebApp extends Construct {
     // Add a listener and open up the load balancer's security group
     // to the world.
     const listener = this.alb.addListener(`${id}ALBListener`, {
-      protocol: ApplicationProtocol.HTTPS,
-      port: 443,
-      certificates: [this.certificate],
+      protocol: ApplicationProtocol.HTTP,
+      port: 80,
+      // certificates: [this.certificate],
     });
     listener.connections.allowDefaultPortFromAnyIpv4('Open to the world');
 
     // Create an AutoScaling group and add it as a load balancing
     // target to the listener.
     listener.addTargets(`${id}ALBTarget`, {
-      port: 3000,
+      port: 3305,
       protocol: ApplicationProtocol.HTTP,
       targets: [this.asg],
       healthCheck: {
         healthyHttpCodes: "200,301,302",
-        port: '3000',
+        port: '3305',
         path: '/deer-return/',
       }
     });
