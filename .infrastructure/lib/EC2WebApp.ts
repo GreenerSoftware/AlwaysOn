@@ -152,7 +152,7 @@ export class EC2WebApp extends Construct {
       healthCheck: {
         healthyHttpCodes: "200,301,302",
         port: '3305',
-        path: '/deer-return/',
+        path: '/deer-return/welcome',
       }
     });
 
