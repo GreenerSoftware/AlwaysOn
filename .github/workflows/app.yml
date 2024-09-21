@@ -1,0 +1,64 @@
+name: app
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+    # Build when there are changes in the directory that holds the component,
+    # or when this workflow file is changed
+    - 'app/**'
+    - '.github/workflows/app.yml'
+  schedule:
+    # A weekly build to pick up updates and security patches for libraries
+    # This should fail if there are API changes in new dependency versions
+    - cron: "11 11 * * 5"
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    name: App static content
+    runs-on: ubuntu-latest
+    env:
+      bucket: ${{ vars.ALWAYS_ON_BUCKET }}
+      distributionId: ${{ vars.ALWAYS_ON_DISTRIBUTIONID }}
+
+    steps:
+
+    - uses: actions/checkout@v4
+
+    - uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: ${{ vars.GHA_OIDC_ROLE }}
+        aws-region: eu-west-2
+
+    - uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - name: Build
+      working-directory: ${{ github.workflow }}
+      run: |
+        npm i
+        npm run build
+
+    - name: Upload assets to s3
+      working-directory: ${{ github.workflow }}
+      run: |
+        # app assets
+        mkdir deer-return
+        cp -r assets deer-return/
+        cp -r node_modules/govuk-frontend deer-return/
+        cp -r node_modules/naturescot-frontend deer-return/
+        # Add missing fonts
+        mkdir -p deer-return/naturescot-frontend/assets/fonts
+        cp assets/fonts/* deer-return/naturescot-frontend/assets/fonts/
+        aws s3 sync --delete deer-return s3://${bucket}/deer-return/
+
+    - name: Invalidate Cloudfront
+      working-directory: ${{ github.workflow }}
+      run: |
+        aws cloudfront create-invalidation --distribution-id $distributionId --paths '/*'
