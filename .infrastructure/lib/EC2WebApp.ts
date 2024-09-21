@@ -119,6 +119,9 @@ export class EC2WebApp extends Construct {
       allowAllOutbound: true,
       // healthCheck: HealthCheck.ec2(),
     });
+    this.asg.addUserData(
+      'cd /home/ec2-user/AlwaysOn/app && npm run start:mock'
+    );
 
     // ALB for ASG
     this.alb = new ApplicationLoadBalancer(this, `${id}Alb`, {
