@@ -1,0 +1,8 @@
+{
+  "availability-zones:account=637423416545:region=eu-west-2": [
+    "eu-west-2a",
+    "eu-west-2b",
+    "eu-west-2c"
+  ],
+  "ami:account=637423416545:filters.image-type.0=machine:filters.name.0=GreenerSoftwareFrontend:filters.state.0=available:owners.0=058264171014:region=eu-west-2": "ami-0afdfebe7e1952d3e"
+}
