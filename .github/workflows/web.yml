@@ -23,8 +23,8 @@ jobs:
     name: Web
     runs-on: ubuntu-latest
     env:
-      bucket: ${{ vars.CLOUDFRONT_BUCKET }}
-      distributionId: ${{ vars.CLOUDFRONT_DISTRIBUTIONID }}
+      bucket: ${{ vars.ALWAYS_ON_BUCKET }}
+      distributionId: ${{ vars.ALWAYS_ON_DISTRIBUTIONID }}
 
     steps:
 
