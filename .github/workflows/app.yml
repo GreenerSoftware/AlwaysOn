@@ -53,6 +53,11 @@ jobs:
         cp -r assets deer-return/
         cp -r node_modules/govuk-frontend deer-return/
         cp -r node_modules/naturescot-frontend deer-return/
+
+        # Tweak the logo path
+        mkdir -p deer-return/naturescot-frontend/assets/images
+        cp node_modules/naturescot-frontend/naturescot/assets/images/naturescot-logo.png deer-return/naturescot-frontend/assets/images/naturescot-logo.png
+
         # Add missing fonts
         mkdir -p deer-return/naturescot-frontend/assets/fonts
         cp assets/fonts/* deer-return/naturescot-frontend/assets/fonts/
