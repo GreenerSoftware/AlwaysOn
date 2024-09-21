@@ -80,7 +80,7 @@ export class EC2WebApp extends Construct {
       domainName,
       hostedZone: props.zone,
       region: 'us-east-1',
-      subjectAlternativeNames: props.redirectWww !== false ? [`www.${domainName}`] : undefined,
+      subjectAlternativeNames: props.redirectWww !== false ? [`www.${domainName}`, `alb.${domainName}`] : [`alb.${domainName}`],
     });
 
     // VPC for EC2 instance
@@ -130,8 +130,9 @@ export class EC2WebApp extends Construct {
     // Add a listener and open up the load balancer's security group
     // to the world.
     const listener = this.alb.addListener(`${id}ALBListener`, {
-      protocol: ApplicationProtocol.HTTP,
-      port: 80,
+      protocol: ApplicationProtocol.HTTPS,
+      port: 443,
+      certificates: [this.certificate],
     });
     listener.connections.allowDefaultPortFromAnyIpv4('Open to the world');
 
