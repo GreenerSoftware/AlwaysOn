@@ -1,11 +1,12 @@
 import { DnsValidatedCertificate } from 'aws-cdk-lib/aws-certificatemanager';
 import { CloudFrontTarget, LoadBalancerTarget } from 'aws-cdk-lib/aws-route53-targets';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
-import { LoadBalancerV2Origin, S3Origin } from 'aws-cdk-lib/aws-cloudfront-origins';
+import { LoadBalancerV2Origin, S3BucketOrigin } from 'aws-cdk-lib/aws-cloudfront-origins';
 import {
   AllowedMethods, CachePolicy, Distribution,
   DistributionProps,
   OriginAccessIdentity,
+  OriginProtocolPolicy,
   OriginRequestPolicy,
   ViewerProtocolPolicy,
 } from 'aws-cdk-lib/aws-cloudfront';
@@ -84,7 +85,7 @@ export class EC2WebApp extends Construct {
       domainName,
       hostedZone: props.zone,
       region: 'us-east-1',
-      subjectAlternativeNames: props.redirectWww !== false ? [`www.${domainName}`, `alb.${domainName}`] : [`alb.${domainName}`],
+      subjectAlternativeNames: props.redirectWww !== false ? [`www.${domainName}`] : undefined,
     });
 
     // VPC for EC2 instance
@@ -138,8 +139,6 @@ export class EC2WebApp extends Construct {
     // to the world.
     const listener = this.alb.addListener(`${id}ALBListener`, {
       protocol: ApplicationProtocol.HTTP,
-      port: 80,
-      // certificates: [this.certificate],
     });
     listener.connections.allowDefaultPortFromAnyIpv4('Open to the world');
 
@@ -168,7 +167,9 @@ export class EC2WebApp extends Construct {
       comment: domainName,
       defaultRootObject: props.defaultIndex ? 'index.html' : undefined,
       defaultBehavior: {
-        origin: new LoadBalancerV2Origin(this.alb),
+        origin: new LoadBalancerV2Origin(this.alb, {
+          protocolPolicy: OriginProtocolPolicy.HTTP_ONLY,
+        }),
         allowedMethods: AllowedMethods.ALLOW_ALL,
         viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
         cachePolicy: CachePolicy.CACHING_DISABLED, // Assume dynamic content
@@ -180,7 +181,7 @@ export class EC2WebApp extends Construct {
       // The aim is to route *.css, *.js, *.jpeg, etc)
       additionalBehaviors: {
         '*.*': {
-          origin: new S3Origin(bucket, { originAccessIdentity }),
+          origin: S3BucketOrigin.withOriginAccessIdentity(bucket, { originAccessIdentity }),
           allowedMethods: AllowedMethods.ALLOW_GET_HEAD_OPTIONS,
           viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
           compress: true,
