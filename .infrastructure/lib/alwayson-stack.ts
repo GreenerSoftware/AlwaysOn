@@ -57,7 +57,7 @@ export default class AlwaysonStack extends Stack {
       zone,
       domainName: DOMAIN_NAME,
       defaultIndex: false,
-      redirectWww: true,
+      redirectWww: false,
       distributionProps: {
         defaultBehavior: defaultBehavior as cloudfront.BehaviorOptions,
       },
