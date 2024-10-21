@@ -17,6 +17,7 @@ const stack = new AlwaysonStack(app, 'Alwayson', {
   /* Uncomment the next line if you know exactly what Account and Region you
    * want to deploy the stack to. */
   env: { account: '637423416545', region: 'eu-west-2' },
+  description: 'Always On: this version of the app runs in traditional 24/7 mode and is always available',
 
   /* For more information, see https://docs.aws.amazon.com/cdk/latest/guide/environments.html */
 });
